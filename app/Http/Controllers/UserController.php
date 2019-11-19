@@ -35,9 +35,14 @@ class UserController extends Controller
         }
     }
 
-    public function register(Request $request)
+    public function store(Request $request)
     {
-        $user->create();
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->save();
+        var_dump('añadido');
     }
     
     public function getUsers(){
