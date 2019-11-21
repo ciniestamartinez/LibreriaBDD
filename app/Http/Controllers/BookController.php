@@ -44,6 +44,9 @@ class BookController extends Controller
         $book->description = $request->description;
         $book->save();
         var_dump('añadido');
+
+        
+
     }
 
     public function getBooks(){

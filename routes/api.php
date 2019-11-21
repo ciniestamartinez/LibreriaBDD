@@ -20,3 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::apiResource('books', 'BookController');
 
 Route::apiResource('users', 'UserController');
+
+Route::post('login', 'UserController@login');
+
+Route::group(['middleware' => ['web']], function () {
+    //
+});

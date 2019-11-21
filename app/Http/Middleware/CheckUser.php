@@ -15,7 +15,10 @@ class CheckUser
      */
     public function handle($request, Closure $next)
     {
-        //Action
+        $token_header = $request->header('Authorization');
+        $token = new Token();
+        $data = $token->decode($token_header);
+        $data->email;
         return $next($request);
     }
 }

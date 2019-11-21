@@ -4,45 +4,53 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
-Use Firebase\JWT\JWT;
+use App\Helpers\Token;
 
 class UserController extends Controller
 {
-    private $key = "_gjkhlaefHISDG67893YUMBNLRSUIASRN57dzdg78745vcbyIUFJIS12'";
     
     public function login(Request $request){
-        //Buscar el user por email
-        User::find('email');
+        //Buscar el email de los usuarios de la BDD
+        $user = User::where('email', $request->email)->get();
 
         //Comprobar que email y password de user son iguales
-        foreach ($users as $key => $user){
-            if($request->email == $user->email){
-                print ("Usuario registrado");
+            $data = ['email' => $request->email];
+
+            $user = User::where($data)->first();
+
+            if($user->password == $request->password)
+            {
                 //Si son iguales codifico el token
-                $data_token = [
-                "email" => $user->email
-                ];
-                $token = JWT::encode($data_token, $this->$key);
+                $token = new Token($data);
+                $tokenEncode = $token->encode();
+
                 //Devolver la respuesta en formato JSON con el token y código 200
                 return response()->json([
-                "token" => $token
+                "token" => $tokenEncode
                 ],200);
-            }else{
-                //Si no son iguales devolver la respuesta JSON con código 401
-                return response()->json(401);
-                print ("Usuario no registrado");
             }
-        }
+            return response()->json([
+            "error" => "Usuario incorrecto"
+            ],401);
     }
 
     public function store(Request $request)
     {
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = $request->password;
-        $user->save();
+        $user = new User();
+        $user->create($request); 
         var_dump('añadido');
+        
+        $data_token = [
+            "email" => $user->email
+        ]; 
+
+        $token = new Token(['email'-> $user->email]);
+        $tokenEncode = $token->encode($data_token);
+        
+        return response()->json([
+            "token" => $tokenEncode
+        ],200);
+
     }
     
     public function getUsers(){
@@ -51,12 +59,6 @@ class UserController extends Controller
             print($user);
         }
     }
-
-    public function lend(Request $request){
-        $user->name = $request->name;
-        $book->title = $request->title;
-        $user->save(); 
-    } 
     
     /**
      * Display a listing of the resource.
